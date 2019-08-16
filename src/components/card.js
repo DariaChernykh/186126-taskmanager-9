@@ -1,14 +1,10 @@
 export default (data) => {
-  const getHashtags = (hashtags) => {
-    const num = [...hashtags].length < 3 ? [...hashtags].length : 3;
-    const array = [...hashtags].slice().sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * num));
-
-    return array.map((tag) => `<span class="card__hashtag-inner">
+  const getHashtags = (array) => array.map((tag) => `
+    <span class="card__hashtag-inner">
       <span class="card__hashtag-name">
         #${tag}
       </span>
     </span>`).join(``);
-  };
   const MONTHS = [`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`,
     `September`, `October`, `November`, `December`];
   const date = `${data.dueDate.getDate()} ${MONTHS[data.dueDate.getMonth()]}`;
