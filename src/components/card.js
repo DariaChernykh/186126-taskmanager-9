@@ -1,18 +1,15 @@
-export default (data) => {
-  const getHashtags = (array) => array.map((tag) => `
+import {getDate} from "../date";
+
+const getHashtags = (array) => array.map((tag) => `
     <span class="card__hashtag-inner">
       <span class="card__hashtag-name">
         #${tag}
       </span>
     </span>`).join(``);
-  const MONTHS = [`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`,
-    `September`, `October`, `November`, `December`];
-  const date = `${data.dueDate.getDate()} ${MONTHS[data.dueDate.getMonth()]}`;
-  const getHours = (hours) => hours > 12 ? hours - 12 : hours;
-  const time = `${getHours(data.dueDate.getHours().toLocaleString())}:${data.dueDate.getMinutes().toLocaleString()}`;
-  const isRepeating = Object.keys(data.repeatingDays).some((day) => data.repeatingDays[day]);
+const isRepeating = (repeatingDays) => Object.keys(repeatingDays).some((day) => repeatingDays[day]);
 
-  return `<article class="card card--${data.color} ${isRepeating ? `card--repeat` : ``}">
+export default (data) => {
+  return `<article class="card card--${data.color} ${isRepeating(data.repeatingDays) ? `card--repeat` : ``}">
     <div class="card__form">
       <div class="card__inner">
         <div class="card__control">
@@ -42,8 +39,8 @@ export default (data) => {
             <div class="card__dates">
               <div class="card__date-deadline">
                 <p class="card__input-deadline-wrap">
-                  <span class="card__date">${date}</span>
-                  <span class="card__time">${time}</span>
+                  <span class="card__date">${getDate(data).date}</span>
+                  <span class="card__time">${getDate(data).time}</span>
                 </p>
               </div>
             </div>

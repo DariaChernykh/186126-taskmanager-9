@@ -1,41 +1,87 @@
 import {getFilter} from './filter';
-const TITLES = new Set([`All`, `Overdue`, `Today`, `Favorites`, `Repeating`, `Tags`, `Archive`]);
+
+const now = new Date().getDate();
+const getAll = (arr) => arr.length;
+const getOverdue = (arr) => {
+  return arr.reduce((acc, value) => {
+    if (value.dueDate.getDate() < now) {
+      acc++;
+    }
+    return acc;
+  }, 0);
+};
+
+const getToday = (arr) => {
+  return arr.reduce((acc, value) => {
+    if (value.dueDate.getDate() === now) {
+      acc++;
+    }
+    return acc;
+  }, 0);
+};
+
+const getFavorites = (arr) => {
+  return arr.reduce((acc, value) => {
+    if (value.isFavorite) {
+      acc++;
+    }
+    return acc;
+  }, 0);
+};
+
+const getRepeating = (arr) => {
+  return arr.reduce((acc, value) => {
+    let task = value.repeatingDays;
+    for (let day in task) {
+      if (task[day]) {
+        acc++;
+        return acc;
+      }
+    }
+    return acc;
+  }, 0);
+};
+
+const getTags = (arr) => {
+  return arr.reduce((acc, value) => {
+    if ([...value.tags].length) {
+      acc++;
+    }
+    return acc;
+  }, 0);
+};
+
+const getArchive = (arr) => {
+  return arr.reduce((acc, value) => {
+    if (value.isArchive) {
+      acc++;
+    }
+    return acc;
+  }, 0);
+};
+
+const createFilters = (arr) => {
+  const filters = {
+    'All': getAll(arr),
+    'Overdue': getOverdue(arr),
+    'Today': getToday(arr),
+    'Favorites': getFavorites(arr),
+    'Repeating': getRepeating(arr),
+    'Tags': getTags(arr),
+    'Archive': getArchive(arr),
+  };
+  return filters;
+};
+
+let arrFilters = [];
+
+const createFiltersComponent = (filters) => {
+  for (let filter in filters) {
+    arrFilters.push(getFilter(filter, filters[filter]));
+  }
+};
 
 export const generateFiltersArray = (arr) => {
-  return [...TITLES].map((title) => {
-    let num = 0;
-    switch (title) {
-      case `All`:
-        num = arr.length;
-        break;
-      case `Overdue`:
-        arr.forEach((value) => value.dueDate.getDay() < new Date(Date.now()).getDay() ? num++ : 0);
-        break;
-      case `Today`:
-        arr.forEach((value) => value.dueDate.getDay() === new Date(Date.now()).getDay() ? num++ : 0);
-        break;
-      case `Favorites`:
-        arr.forEach((value) => value.isFavorite ? num++ : 0);
-        break;
-      case `Repeating`:
-        arr.map(function (value) {
-
-          let task = value.repeatingDays;
-          for (let day in task) {
-            if (task[day]) {
-              return num++;
-            }
-          }
-          return num;
-        });
-        break;
-      case `Tags`:
-        arr.forEach((value) => [...value.tags].length ? num++ : 0);
-        break;
-      case `Archive`:
-        arr.forEach((value) => value.isArchive ? num++ : 0);
-        break;
-    }
-    return getFilter(title, num);
-  });
+  createFiltersComponent(createFilters(arr));
+  return arrFilters.join(``);
 };

@@ -51,10 +51,7 @@ const renderContent = () => {
   renderComponents(createFiltersContainer(), MAIN_CONTAINER);
 
   const FILTERS_CONTAINER = document.querySelector(`.main__filter`);
-
-  ARR_FILTERS.forEach(function (filter) {
-    renderComponents(filter, FILTERS_CONTAINER);
-  });
+  renderComponents(ARR_FILTERS, FILTERS_CONTAINER);
 
   generateFiltersArray(ARR_TASKS);
   renderComponents(createContainer(), MAIN_CONTAINER);
