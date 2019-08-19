@@ -1,68 +1,87 @@
-export const getFilters = () => `<section class="main__filter filter container">
-    <input
-      type="radio"
-      id="filter__all"
-      class="filter__input visually-hidden"
-      name="filter"
-      checked
-    />
-    <label for="filter__all" class="filter__label">
-      All <span class="filter__all-count">13</span></label
-    >
-    <input
-      type="radio"
-      id="filter__overdue"
-      class="filter__input visually-hidden"
-      name="filter"
-      disabled
-    />
-    <label for="filter__overdue" class="filter__label"
-      >Overdue <span class="filter__overdue-count">0</span></label
-    >
-    <input
-      type="radio"
-      id="filter__today"
-      class="filter__input visually-hidden"
-      name="filter"
-      disabled
-    />
-    <label for="filter__today" class="filter__label"
-      >Today <span class="filter__today-count">0</span></label
-    >
-    <input
-      type="radio"
-      id="filter__favorites"
-      class="filter__input visually-hidden"
-      name="filter"
-    />
-    <label for="filter__favorites" class="filter__label"
-      >Favorites <span class="filter__favorites-count">1</span></label
-    >
-    <input
-      type="radio"
-      id="filter__repeating"
-      class="filter__input visually-hidden"
-      name="filter"
-    />
-    <label for="filter__repeating" class="filter__label"
-      >Repeating <span class="filter__repeating-count">1</span></label
-    >
-    <input
-      type="radio"
-      id="filter__tags"
-      class="filter__input visually-hidden"
-      name="filter"
-    />
-    <label for="filter__tags" class="filter__label"
-      >Tags <span class="filter__tags-count">1</span></label
-    >
-    <input
-      type="radio"
-      id="filter__archive"
-      class="filter__input visually-hidden"
-      name="filter"
-    />
-    <label for="filter__archive" class="filter__label"
-      >Archive <span class="filter__archive-count">115</span></label
-    >
-  </section>`;
+import {getFilter} from './filter';
+
+const now = new Date().getDate();
+const getAll = (arr) => arr.length;
+const getOverdue = (arr) => {
+  return arr.reduce((acc, value) => {
+    if (value.dueDate.getDate() < now) {
+      acc++;
+    }
+    return acc;
+  }, 0);
+};
+
+const getToday = (arr) => {
+  return arr.reduce((acc, value) => {
+    if (value.dueDate.getDate() === now) {
+      acc++;
+    }
+    return acc;
+  }, 0);
+};
+
+const getFavorites = (arr) => {
+  return arr.reduce((acc, value) => {
+    if (value.isFavorite) {
+      acc++;
+    }
+    return acc;
+  }, 0);
+};
+
+const getRepeating = (arr) => {
+  return arr.reduce((acc, value) => {
+    let task = value.repeatingDays;
+    for (let day in task) {
+      if (task[day]) {
+        acc++;
+        return acc;
+      }
+    }
+    return acc;
+  }, 0);
+};
+
+const getTags = (arr) => {
+  return arr.reduce((acc, value) => {
+    if ([...value.tags].length) {
+      acc++;
+    }
+    return acc;
+  }, 0);
+};
+
+const getArchive = (arr) => {
+  return arr.reduce((acc, value) => {
+    if (value.isArchive) {
+      acc++;
+    }
+    return acc;
+  }, 0);
+};
+
+const createFilters = (arr) => {
+  const filters = {
+    'All': getAll(arr),
+    'Overdue': getOverdue(arr),
+    'Today': getToday(arr),
+    'Favorites': getFavorites(arr),
+    'Repeating': getRepeating(arr),
+    'Tags': getTags(arr),
+    'Archive': getArchive(arr),
+  };
+  return filters;
+};
+
+let arrFilters = [];
+
+const createFiltersComponent = (filters) => {
+  for (let filter in filters) {
+    arrFilters.push(getFilter(filter, filters[filter]));
+  }
+};
+
+export const generateFiltersArray = (arr) => {
+  createFiltersComponent(createFilters(arr));
+  return arrFilters.join(``);
+};
