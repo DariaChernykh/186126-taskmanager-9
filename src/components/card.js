@@ -1,4 +1,5 @@
 import {getDate} from "../date";
+import {createElement} from '../utils';
 
 const getHashtags = (array) => array.map((tag) => `
     <span class="card__hashtag-inner">
@@ -6,20 +7,50 @@ const getHashtags = (array) => array.map((tag) => `
         #${tag}
       </span>
     </span>`).join(``);
-const isRepeating = (repeatingDays) => Object.keys(repeatingDays).some((day) => repeatingDays[day]);
 
-export default (data) => {
-  return `<article class="card card--${data.color} ${isRepeating(data.repeatingDays) ? `card--repeat` : ``}">
+export default class Card {
+  constructor(data) {
+    this._self = data;
+    this._color = data.color;
+    this._repeatingDays = data.repeatingDays;
+    this._isArchive = data.isArchive;
+    this._isFavorite = data.isFavorite;
+    this._description = data.description;
+    this._tags = data.tags;
+    this._isFavorite = data.isFavorite;
+    this._element = null;
+    this._onEdit = null;
+  }
+
+  _isRepeating() {
+    return Object.values(this._repeatingDays).some((day) => day === true);
+  }
+
+  _onEditButtonClick() {
+    if (typeof this._onEdit === `function`) {
+      this._onEdit();
+    }
+  }
+  get element() {
+    return this._element;
+  }
+
+  onEdit(fn) {
+    this._onEdit = fn;
+  }
+
+  getTemplate() {
+    return `<article class="card card--${this._color} ${this._isRepeating() ? `card--repeat` : ``}">
     <div class="card__form">
       <div class="card__inner">
         <div class="card__control">
           <button type="button" class="card__btn card__btn--edit">
             edit
           </button>
-          <button type="button" class="card__btn card__btn--archive  ${data.isArchive ? `card__btn--disabled` : ``}">
+          <button type="button" class="card__btn card__btn--archive  ${this._isArchive ? `card__btn--disabled` : ``}">
             archive
           </button>
-          <button type="button" class="card__btn ${data.isFavorite ? `card__btn--favorites` : ``} card__btn--disabled">
+          <button type="button" class="card__btn ${this._isFavorite ? `card__btn--favorites` : ``} card__btn--disabled">
             favorites
           </button>
         </div>
@@ -31,7 +62,7 @@ export default (data) => {
         </div>
 
         <div class="card__textarea-wrap">
-          <p class="card__text">${data.description}</p>
+          <p class="card__text">${this._description}</p>
         </div>
 
         <div class="card__settings">
@@ -39,15 +70,15 @@ export default (data) => {
             <div class="card__dates">
               <div class="card__date-deadline">
                 <p class="card__input-deadline-wrap">
-                  <span class="card__date">${getDate(data).date}</span>
-                  <span class="card__time">${getDate(data).time}</span>
+                  <span class="card__date">${getDate(this._self).date}</span>
+                  <span class="card__time">${getDate(this._self).time}</span>
                 </p>
               </div>
             </div>
 
             <div class="card__hashtag">
               <div class="card__hashtag-list">
-                ${getHashtags(data.tags)}
+                ${getHashtags(this._tags)}
               </div>
             </div>
           </div>
@@ -55,4 +86,26 @@ export default (data) => {
       </div>
     </div>
   </article>`;
-};
+  }
+
+  render() {
+    this._element = createElement(this.getTemplate());
+    this.bind();
+    return this._element;
+  }
+
+  unrender() {
+    this.unbind();
+    this._element = null;
+  }
+
+  bind() {
+    this._element.querySelector(`.card__btn--edit`)
+      .addEventListener(`click`, this._onEditButtonClick.bind(this));
+  }
+
+  unbind() {
+    this._element.querySelector(`.card__btn--edit`)
+      .removeEventListener(`click`, this._onEditButtonClick.bind(this));
+  }
+}

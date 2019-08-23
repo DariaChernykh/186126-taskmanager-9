@@ -1,4 +1,6 @@
 import {getDate} from '../date';
+import {createElement} from "../utils";
+
 const getHashtags = (array) => array.map((tag) => `
     <span class="card__hashtag-inner">
       <input
@@ -50,17 +52,50 @@ const generateRepeatingDays = function (days) {
 
 const isRepeating = (repeatingDays) => Object.keys(repeatingDays).some((day) => repeatingDays[day]);
 
-export const getCardEdit = (data) => {
-  return `<article class="card card--edit card--${data.color} ${isRepeating(data.repeatingDays) ? `card--repeat` : ``}">
+export default class CardEdit {
+  constructor(data) {
+    this._self = data;
+    this._color = data.color;
+    this._colors = data.colors;
+    this._repeatingDays = data.repeatingDays;
+    this._isArchive = data.isArchive;
+    this._isFavorite = data.isFavorite;
+    this._description = data.description;
+    this._tags = data.tags;
+    this._isFavorite = data.isFavorite;
+    this._element = null;
+  }
+
+  _isRepeating() {
+    return Object.values(this._repeatingDays).some((day) => day === true);
+  }
+
+  get element() {
+    return this._element;
+  }
+
+  _onSubmitButtonClick(evt) {
+    evt.preventDefault();
+    if (typeof this._onSubmit === `function`) {
+      this._onSubmit();
+    }
+  }
+
+  onSubmit(fn) {
+    this._onSubmit = fn;
+  }
+
+  getTemplate() {
+    return `<article class="card card--edit card--${this._color} ${this._isRepeating() ? `card--repeat` : ``}">
     <form class="card__form" method="get">
       <div class="card__inner">
         <div class="card__control">
-          <button type="button" class="card__btn card__btn--archive  ${data.isArchive ? `card__btn--disabled` : ``}">
+          <button type="button" class="card__btn card__btn--archive  ${this._isArchive ? `card__btn--disabled` : ``}">
             archive
           </button>
           <button
             type="button"
-            class="card__btn ${data.isFavorite ? `card__btn--favorites` : ``} card__btn--disabled"
+            class="card__btn ${this._isFavorite ? `card__btn--favorites` : ``} card__btn--disabled"
           >
             favorites
           </button>
@@ -78,7 +113,7 @@ export const getCardEdit = (data) => {
               class="card__text"
               placeholder="Start typing your text here..."
               name="text"
-            >${data.description}</textarea>
+            >${this._description}</textarea>
           </label>
         </div>
 
@@ -96,25 +131,25 @@ export const getCardEdit = (data) => {
                     type="text"
                     placeholder=""
                     name="date"
-                    value="${getDate(data).date} ${getDate(data).time}"
+                    value="${getDate(this._self).date} ${getDate(this._self).time}"
                   />
                 </label>
               </fieldset>
 
               <button class="card__repeat-toggle" type="button">
-                repeat:<span class="card__repeat-status">${isRepeating(data.repeatingDays) ? `yes` : `no`}</span>
+                repeat:<span class="card__repeat-status">${isRepeating(this._repeatingDays) ? `yes` : `no`}</span>
               </button>
 
               <fieldset class="card__repeat-days">
                 <div class="card__repeat-days-inner">
-                  ${generateRepeatingDays(data.repeatingDays)}
+                  ${generateRepeatingDays(this._repeatingDays)}
                 </div>
               </fieldset>
             </div>
 
             <div class="card__hashtag">
               <div class="card__hashtag-list">
-                ${getHashtags(data.tags)}
+                ${getHashtags(this._tags)}
               </div>
 
               <label>
@@ -131,7 +166,7 @@ export const getCardEdit = (data) => {
           <div class="card__colors-inner">
             <h3 class="card__colors-title">Color</h3>
             <div class="card__colors-wrap">
-              ${getColor(data.colors, data.color)}
+              ${getColor(this._colors, this._color)}
             </div>
           </div>
         </div>
@@ -143,4 +178,26 @@ export const getCardEdit = (data) => {
       </div>
     </form>
   </article>`;
-};
+  }
+
+  render() {
+    this._element = createElement(this.getTemplate());
+    this.bind();
+    return this._element;
+  }
+
+  unrender() {
+    this.unbind();
+    this._element = null;
+  }
+
+  bind() {
+    this._element.querySelector(`.card__form`)
+      .addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+  }
+
+  unbind() {
+    this._element.querySelector(`.card__form`)
+      .removeEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+  }
+}

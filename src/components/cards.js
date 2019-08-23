@@ -1,3 +1,6 @@
-import getCard from './card';
+import Card from './card';
 
-export const generateCardsArray = (tasks) => tasks.map((task) => getCard(task));
+export const generateCardsArray = (tasks) => tasks.map((task) => {
+  const card = new Card(task);
+  return card.template;
+});
