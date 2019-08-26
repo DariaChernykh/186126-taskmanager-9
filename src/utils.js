@@ -3,3 +3,5 @@ export const createElement = (template) => {
   newElement.innerHTML = template;
   return newElement.firstChild;
 };
+
+export const renderComponents = (elem, parent) => parent.insertAdjacentHTML(`beforeend`, elem);
