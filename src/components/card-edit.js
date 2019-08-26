@@ -63,6 +63,7 @@ export default class CardEdit {
     this._description = data.description;
     this._tags = data.tags;
     this._isFavorite = data.isFavorite;
+    this._element = null;
     this._onEscKeyUp = this._onEscUp.bind(this);
   }
 
