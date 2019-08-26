@@ -216,13 +216,12 @@ export default class CardEdit {
   bind() {
     this._element.querySelector(`.card__form`)
       .addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
-
     document.addEventListener(`keyup`, this._onEscUp.bind(this));
   }
 
   unbind() {
     this._element.querySelector(`.card__form`)
       .removeEventListener(`submit`, this._onSubmitButtonClick.bind(this));
-    document.addEventListener(`keyup`, this._onEscUp.bind(this));
+    document.removeEventListener(`keyup`, this._onEscUp.bind(this));
   }
 }
