@@ -1,5 +1,6 @@
 import {getDate} from "../date";
 import {createElement} from '../utils';
+import AbstractComponent from "./absctract-component";
 
 const getHashtags = (array) => array.map((tag) => `
     <span class="card__hashtag-inner">
@@ -8,8 +9,9 @@ const getHashtags = (array) => array.map((tag) => `
       </span>
     </span>`).join(``);
 
-export default class Card {
+export default class Card extends AbstractComponent {
   constructor(data) {
+    super();
     this._self = data;
     this._color = data.color;
     this._repeatingDays = data.repeatingDays;
@@ -18,7 +20,6 @@ export default class Card {
     this._description = data.description;
     this._tags = data.tags;
     this._isFavorite = data.isFavorite;
-    this._element = null;
     this._onEdit = null;
   }
 
@@ -30,9 +31,6 @@ export default class Card {
     if (typeof this._onEdit === `function`) {
       this._onEdit();
     }
-  }
-  get element() {
-    return this._element;
   }
 
   onEdit(fn) {
