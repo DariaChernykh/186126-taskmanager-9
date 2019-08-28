@@ -45,6 +45,13 @@ const renderTasks = (parent, container, arrTasks) => {
         editTaskComponent.render();
         parent.replaceChild(editTaskComponent.element, taskComponent.element);
         taskComponent.unrender();
+
+      });
+
+      editTaskComponent.onEscape(() => {
+        taskComponent.render();
+        parent.replaceChild(taskComponent.element, editTaskComponent.element);
+        editTaskComponent.unrender();
       });
 
       editTaskComponent.onSubmit(() => {

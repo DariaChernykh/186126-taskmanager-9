@@ -64,6 +64,7 @@ export default class CardEdit {
     this._tags = data.tags;
     this._isFavorite = data.isFavorite;
     this._element = null;
+    this._onEscKeyUp = this._onEscUp.bind(this);
   }
 
   _isRepeating() {
@@ -81,8 +82,19 @@ export default class CardEdit {
     }
   }
 
+  _onEscUp(evt) {
+    evt.preventDefault();
+    if (typeof this._onEscape === `function` && evt.code === `Escape`) {
+      this._onEscape();
+    }
+  }
+
   onSubmit(fn) {
     this._onSubmit = fn;
+  }
+
+  onEscape(fn) {
+    this._onEscape = fn;
   }
 
   getTemplate() {
@@ -183,6 +195,17 @@ export default class CardEdit {
   render() {
     this._element = createElement(this.getTemplate());
     this.bind();
+
+    this._element.querySelector(`textarea`)
+      .addEventListener(`focus`, () => {
+        document.removeEventListener(`keyup`, this._onEscKeyUp);
+      });
+
+    this._element.querySelector(`textarea`)
+      .addEventListener(`blur`, () => {
+        document.addEventListener(`keyup`, this._onEscKeyUp);
+      });
+
     return this._element;
   }
 
@@ -194,10 +217,12 @@ export default class CardEdit {
   bind() {
     this._element.querySelector(`.card__form`)
       .addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+    document.addEventListener(`keyup`, this._onEscKeyUp);
   }
 
   unbind() {
     this._element.querySelector(`.card__form`)
       .removeEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+    document.removeEventListener(`keyup`, this._onEscKeyUp);
   }
 }
