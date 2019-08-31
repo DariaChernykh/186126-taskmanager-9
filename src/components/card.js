@@ -1,6 +1,6 @@
 import {getDate} from "../date";
 import {createElement} from '../utils';
-import AbstractComponent from "./absctract-component";
+import AbstractComponent from "./abstract-component";
 
 const getHashtags = (array) => array.map((tag) => `
     <span class="card__hashtag-inner">
@@ -21,6 +21,7 @@ export default class Card extends AbstractComponent {
     this._tags = data.tags;
     this._isFavorite = data.isFavorite;
     this._onEdit = null;
+    this._onEditClick = this._onEditButtonClick.bind(this);
   }
 
   _isRepeating() {
@@ -87,7 +88,7 @@ export default class Card extends AbstractComponent {
   }
 
   render() {
-    this._element = createElement(this.getTemplate());
+    this._element = this.getElement();
     this.bind();
     return this._element;
   }
@@ -99,11 +100,11 @@ export default class Card extends AbstractComponent {
 
   bind() {
     this._element.querySelector(`.card__btn--edit`)
-      .addEventListener(`click`, this._onEditButtonClick.bind(this));
+      .addEventListener(`click`, this._onEditClick);
   }
 
   unbind() {
     this._element.querySelector(`.card__btn--edit`)
-      .removeEventListener(`click`, this._onEditButtonClick.bind(this));
+      .removeEventListener(`click`, this._onEditClick);
   }
 }

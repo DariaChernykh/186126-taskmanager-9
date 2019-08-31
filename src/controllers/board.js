@@ -1,7 +1,6 @@
 import Task from "../components/card";
 import TaskEdit from "../components/card-edit";
-import {getBtnMore} from "../components/button";
-import {renderComponents} from '../utils';
+import BtnLoadMore from "../components/button";
 
 const LIMIT_NUM_OF_CARDS = 8;
 const START_NUM_OF_CARDS = 8;
@@ -41,11 +40,12 @@ export default class BoardController {
 
   _renderTasks(arrTasks) {
     let iter = START_NUM_OF_CARDS;
-
+    const button = new BtnLoadMore();
     const getLastCards = (arr) => {
       const cards = arr;
       if (arr.length < LIMIT_NUM_OF_CARDS) {
-        document.querySelector(`.load-more`).style.display = `none`;
+        this._board.removeChild(button.getElement());
+        button.unrender();
       }
       iter += LIMIT_NUM_OF_CARDS;
       return cards;
@@ -56,10 +56,9 @@ export default class BoardController {
     } else {
       let arr = arrTasks.slice(0, START_NUM_OF_CARDS);
       this._rendCard(arr);
-      renderComponents(getBtnMore(), this._board);
 
-      const MORE_BUTTON = document.querySelector(`.load-more`);
-      MORE_BUTTON.addEventListener(`click`, () => {
+      this._board.appendChild(button.getElement());
+      button.onBtnClick(() => {
         let arrAdd = getLastCards(arrTasks.slice(iter, iter + LIMIT_NUM_OF_CARDS));
         this._rendCard(arrAdd);
       });

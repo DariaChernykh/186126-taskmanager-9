@@ -1,6 +1,5 @@
 import {getDate} from '../date';
-import {createElement} from "../utils";
-import AbstractComponent from "./absctract-component";
+import AbstractComponent from "./abstract-component";
 
 const getHashtags = (array) => array.map((tag) => `
     <span class="card__hashtag-inner">
@@ -67,6 +66,7 @@ export default class CardEdit extends AbstractComponent {
     this._isFavorite = data.isFavorite;
     this._element = null;
     this._onEscKeyUp = this._onEscUp.bind(this);
+    this._onSubmitClick = this._onSubmitButtonClick.bind(this);
   }
 
   _isRepeating() {
@@ -191,7 +191,7 @@ export default class CardEdit extends AbstractComponent {
   }
 
   render() {
-    this._element = createElement(this.getTemplate());
+    this._element = this.getElement();
     this.bind();
 
     this._element.querySelector(`textarea`)
@@ -214,13 +214,13 @@ export default class CardEdit extends AbstractComponent {
 
   bind() {
     this._element.querySelector(`.card__form`)
-      .addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+      .addEventListener(`submit`, this._onSubmitClick);
     document.addEventListener(`keyup`, this._onEscKeyUp);
   }
 
   unbind() {
     this._element.querySelector(`.card__form`)
-      .removeEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+      .removeEventListener(`submit`, this._onSubmitClick);
     document.removeEventListener(`keyup`, this._onEscKeyUp);
   }
 }
