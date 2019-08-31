@@ -7,6 +7,7 @@ import {getRandomInt} from './data';
 import {generateTasksArray} from './components/tasks';
 import {createFiltersContainer} from './components/filters-container';
 import BoardController from "./controllers/board";
+import TaskList from './components/task-list';
 import {renderComponents} from './utils';
 
 const MAIN_CONTAINER = document.querySelector(`.main`);
@@ -25,11 +26,15 @@ const renderContent = () => {
   generateFiltersArray(ARR_TASKS);
 
   const boardComponent = new Board();
+  const taskListComponent = new TaskList();
   renderComponents(boardComponent.getTemplate(), MAIN_CONTAINER);
   const BOARD = document.querySelector(`.board`);
-  renderComponents(getBoardFilter(), BOARD);
 
-  const boardController = new BoardController(BOARD, ARR_TASKS);
+  renderComponents(getBoardFilter(), BOARD);
+  renderComponents(taskListComponent.getTemplate(), BOARD);
+  const TASK_LIST = document.querySelector(`.board__tasks`);
+
+  const boardController = new BoardController(BOARD, ARR_TASKS, TASK_LIST);
   boardController.init();
 };
 
