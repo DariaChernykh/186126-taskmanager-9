@@ -24,15 +24,9 @@ const renderContent = () => {
   generateFiltersArray(ARR_TASKS);
 
   const boardComponent = new Board();
-  // const taskListComponent = new TaskList();
   renderComponents(boardComponent.getTemplate(), MAIN_CONTAINER);
   const BOARD = document.querySelector(`.board`);
 
-  // renderComponents(getBoardFilter(), BOARD);
-  // renderComponents(taskListComponent.getTemplate(), BOARD);
-  // const TASK_LIST = document.querySelector(`.board__tasks`);
-
-  // const boardController = new BoardController(BOARD, ARR_TASKS, TASK_LIST);
   const boardController = new BoardController(BOARD, ARR_TASKS);
   boardController.init();
 };
