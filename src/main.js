@@ -1,4 +1,3 @@
-import {getBoardFilter} from './components/sort';
 import Board from './components/board';
 import {generateFiltersArray} from './components/filters';
 import {getMenu} from './components/menu';
@@ -7,7 +6,6 @@ import {getRandomInt} from './data';
 import {generateTasksArray} from './components/tasks';
 import {createFiltersContainer} from './components/filters-container';
 import BoardController from "./controllers/board";
-import TaskList from './components/task-list';
 import {renderComponents} from './utils';
 
 const MAIN_CONTAINER = document.querySelector(`.main`);
