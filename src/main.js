@@ -1,4 +1,4 @@
-import {getBoardFilter} from './components/board-filters';
+import {getBoardFilter} from './components/sort';
 import Board from './components/board';
 import {generateFiltersArray} from './components/filters';
 import {getMenu} from './components/menu';
@@ -26,15 +26,16 @@ const renderContent = () => {
   generateFiltersArray(ARR_TASKS);
 
   const boardComponent = new Board();
-  const taskListComponent = new TaskList();
+  // const taskListComponent = new TaskList();
   renderComponents(boardComponent.getTemplate(), MAIN_CONTAINER);
   const BOARD = document.querySelector(`.board`);
 
-  renderComponents(getBoardFilter(), BOARD);
-  renderComponents(taskListComponent.getTemplate(), BOARD);
-  const TASK_LIST = document.querySelector(`.board__tasks`);
+  // renderComponents(getBoardFilter(), BOARD);
+  // renderComponents(taskListComponent.getTemplate(), BOARD);
+  // const TASK_LIST = document.querySelector(`.board__tasks`);
 
-  const boardController = new BoardController(BOARD, ARR_TASKS, TASK_LIST);
+  // const boardController = new BoardController(BOARD, ARR_TASKS, TASK_LIST);
+  const boardController = new BoardController(BOARD, ARR_TASKS);
   boardController.init();
 };
 
