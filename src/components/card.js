@@ -1,5 +1,6 @@
 import {getDate} from "../date";
 import {createElement} from '../utils';
+import AbstractComponent from "./abstract-component";
 
 const getHashtags = (array) => array.map((tag) => `
     <span class="card__hashtag-inner">
@@ -8,8 +9,9 @@ const getHashtags = (array) => array.map((tag) => `
       </span>
     </span>`).join(``);
 
-export default class Card {
+export default class Card extends AbstractComponent {
   constructor(data) {
+    super();
     this._self = data;
     this._color = data.color;
     this._repeatingDays = data.repeatingDays;
@@ -18,8 +20,8 @@ export default class Card {
     this._description = data.description;
     this._tags = data.tags;
     this._isFavorite = data.isFavorite;
-    this._element = null;
     this._onEdit = null;
+    this._onEditClick = this._onEditButtonClick.bind(this);
   }
 
   _isRepeating() {
@@ -30,9 +32,6 @@ export default class Card {
     if (typeof this._onEdit === `function`) {
       this._onEdit();
     }
-  }
-  get element() {
-    return this._element;
   }
 
   onEdit(fn) {
@@ -89,7 +88,7 @@ export default class Card {
   }
 
   render() {
-    this._element = createElement(this.getTemplate());
+    this._element = this.getElement();
     this.bind();
     return this._element;
   }
@@ -101,11 +100,11 @@ export default class Card {
 
   bind() {
     this._element.querySelector(`.card__btn--edit`)
-      .addEventListener(`click`, this._onEditButtonClick.bind(this));
+      .addEventListener(`click`, this._onEditClick);
   }
 
   unbind() {
     this._element.querySelector(`.card__btn--edit`)
-      .removeEventListener(`click`, this._onEditButtonClick.bind(this));
+      .removeEventListener(`click`, this._onEditClick);
   }
 }

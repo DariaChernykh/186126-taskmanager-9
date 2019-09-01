@@ -1,5 +1,5 @@
 import {getDate} from '../date';
-import {createElement} from "../utils";
+import AbstractComponent from "./abstract-component";
 
 const getHashtags = (array) => array.map((tag) => `
     <span class="card__hashtag-inner">
@@ -52,8 +52,9 @@ const generateRepeatingDays = function (days) {
 
 const isRepeating = (repeatingDays) => Object.keys(repeatingDays).some((day) => repeatingDays[day]);
 
-export default class CardEdit {
+export default class CardEdit extends AbstractComponent {
   constructor(data) {
+    super();
     this._self = data;
     this._color = data.color;
     this._colors = data.colors;
@@ -65,14 +66,11 @@ export default class CardEdit {
     this._isFavorite = data.isFavorite;
     this._element = null;
     this._onEscKeyUp = this._onEscUp.bind(this);
+    this._onSubmitClick = this._onSubmitButtonClick.bind(this);
   }
 
   _isRepeating() {
     return Object.values(this._repeatingDays).some((day) => day === true);
-  }
-
-  get element() {
-    return this._element;
   }
 
   _onSubmitButtonClick(evt) {
@@ -193,7 +191,7 @@ export default class CardEdit {
   }
 
   render() {
-    this._element = createElement(this.getTemplate());
+    this._element = this.getElement();
     this.bind();
 
     this._element.querySelector(`textarea`)
@@ -216,13 +214,13 @@ export default class CardEdit {
 
   bind() {
     this._element.querySelector(`.card__form`)
-      .addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+      .addEventListener(`submit`, this._onSubmitClick);
     document.addEventListener(`keyup`, this._onEscKeyUp);
   }
 
   unbind() {
     this._element.querySelector(`.card__form`)
-      .removeEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+      .removeEventListener(`submit`, this._onSubmitClick);
     document.removeEventListener(`keyup`, this._onEscKeyUp);
   }
 }
