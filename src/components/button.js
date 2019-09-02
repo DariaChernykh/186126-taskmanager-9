@@ -3,6 +3,7 @@ import AbstractComponent from "./abstract-component";
 export default class BtnLoadMore extends AbstractComponent {
   constructor() {
     super();
+    this.hidden = true;
     this._onClick = this._onButtonClick.bind(this);
   }
 
@@ -22,9 +23,15 @@ export default class BtnLoadMore extends AbstractComponent {
     return `<button class="load-more" type="button">load more</button>`;
   }
 
+  render() {
+    this._hidden = false;
+    this.bind();
+  }
+
   unrender() {
     this.unbind();
     this._element = null;
+    this._hidden = true;
   }
 
   bind() {
