@@ -1,23 +1,26 @@
 import {getDate} from "../date";
-import {createElement} from '../utils';
 import AbstractComponent from "./abstract-component";
 
-const getHashtags = (array) => array.map((tag) => `
-    <span class="card__hashtag-inner">
+const getHashtags = function (array) {
+  if (!array.length) {
+    return ``;
+  }
+  return array.map((tag) => `<span class="card__hashtag-inner">
       <span class="card__hashtag-name">
         #${tag}
       </span>
     </span>`).join(``);
+};
 
 export default class Card extends AbstractComponent {
   constructor(data) {
     super();
-    this._self = data;
     this._color = data.color;
     this._repeatingDays = data.repeatingDays;
     this._isArchive = data.isArchive;
     this._isFavorite = data.isFavorite;
     this._description = data.description;
+    this._date = getDate(data);
     this._tags = data.tags;
     this._isFavorite = data.isFavorite;
     this._onEdit = null;
@@ -69,8 +72,8 @@ export default class Card extends AbstractComponent {
             <div class="card__dates">
               <div class="card__date-deadline">
                 <p class="card__input-deadline-wrap">
-                  <span class="card__date">${getDate(this._self).date}</span>
-                  <span class="card__time">${getDate(this._self).time}</span>
+                  <span class="card__date">${this._date.date}</span>
+                  <span class="card__time">${this._date.time}</span>
                 </p>
               </div>
             </div>
