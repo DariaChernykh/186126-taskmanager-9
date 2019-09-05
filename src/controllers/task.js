@@ -31,12 +31,12 @@ export default class TaskController {
 
     editTaskComponent.onSubmit(() => {
       const formData = new FormData(editTaskComponent.getElement().querySelector(`.card__form`));
-
       const entry = {
         description: formData.get(`text`),
         color: formData.get(`color`),
         colors: editTaskComponent._colors,
         tags: formData.getAll(`hashtag`),
+        isDate: !!formData.get(`date`),
         dueDate: new Date(formData.get(`date`)),
         repeatingDays: formData.getAll(`repeat`).reduce((acc, it) => {
           acc[it] = true;

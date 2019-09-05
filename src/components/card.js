@@ -21,6 +21,7 @@ export default class Card extends AbstractComponent {
     this._isFavorite = data.isFavorite;
     this._description = data.description;
     this._date = getDate(data);
+    this._isDate = data.isDate;
     this._tags = data.tags;
     this._isFavorite = data.isFavorite;
     this._onEdit = null;
@@ -69,14 +70,14 @@ export default class Card extends AbstractComponent {
 
         <div class="card__settings">
           <div class="card__details">
-            <div class="card__dates">
+            ${this._isDate ? `<div class="card__dates">
               <div class="card__date-deadline">
                 <p class="card__input-deadline-wrap">
                   <span class="card__date">${this._date.date}</span>
                   <span class="card__time">${this._date.time}</span>
                 </p>
               </div>
-            </div>
+            </div>` : ``}
 
             <div class="card__hashtag">
               <div class="card__hashtag-list">

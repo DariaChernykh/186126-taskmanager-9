@@ -3,7 +3,7 @@ import {getFilter} from './filter';
 const now = new Date().getDate();
 const getAll = (arr) => arr.length;
 const getOverdue = (arr) => {
-  return arr.reduce((acc, value) => {
+  return arr.filter((value)=>value.dueDate).reduce((acc, value) => {
     if (value.dueDate.getDate() < now) {
       acc++;
     }
@@ -12,7 +12,7 @@ const getOverdue = (arr) => {
 };
 
 const getToday = (arr) => {
-  return arr.reduce((acc, value) => {
+  return arr.filter((value)=>value.dueDate).reduce((acc, value) => {
     if (value.dueDate.getDate() === now) {
       acc++;
     }
@@ -61,7 +61,7 @@ const getArchive = (arr) => {
 };
 
 const createFilters = (arr) => {
-  const filters = {
+  return {
     'All': getAll(arr),
     'Overdue': getOverdue(arr),
     'Today': getToday(arr),
@@ -70,7 +70,6 @@ const createFilters = (arr) => {
     'Tags': getTags(arr),
     'Archive': getArchive(arr),
   };
-  return filters;
 };
 
 let arrFilters = [];

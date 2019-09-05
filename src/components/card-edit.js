@@ -70,6 +70,7 @@ export default class CardEdit extends AbstractComponent {
     this._isFavorite = data.isFavorite;
     this._description = data.description;
     this._date = getDate(data);
+    this._isDate = data.isDate;
     this._tags = data.tags;
     this._isFavorite = data.isFavorite;
     this._element = null;
@@ -83,12 +84,11 @@ export default class CardEdit extends AbstractComponent {
     this._onChangeRepeatedDay = this._onChangeRepeatedDay.bind(this);
     this._onAddTag = this._onAddTag.bind(this);
 
-    this._state.isDate = !!Object.keys(this._date).length;
     this._state.isRepeated = this._isRepeated();
   }
 
   _isRepeated() {
-    return Object.values(this._repeatingDays).some((it) => it === true);
+    return Object.values(this._repeatingDays).some((it) => it);
   }
 
   _onSubmitButtonClick(evt) {
@@ -149,16 +149,15 @@ export default class CardEdit extends AbstractComponent {
           <div class="card__details">
             <div class="card__dates">
               <button class="card__date-deadline-toggle" type="button">
-                date: <span class="card__date-status">${this._state.isDate ? `yes` : `no`}</span>
+                date: <span class="card__date-status">${this._isDate ? `yes` : `no`}</span>
               </button>
-              ${this._state.isDate ? `<fieldset class="card__date-deadline">
+              ${this._isDate ? `<fieldset class="card__date-deadline">
                   <label class="card__input-deadline-wrap">
                     <input
                       class="card__date"
                       type="text"
                       placeholder=""
                       name="date"
-                      value="${this._date.date} ${this._date.time}"
                       value="${this._date ? `${this._date.date} ${this._date.time}` : ``}"
                     />
                   </label>
@@ -255,7 +254,10 @@ export default class CardEdit extends AbstractComponent {
   }
 
   _onChangeDate() {
-    this._state.isDate = !this._state.isDate;
+    this._isDate = !this._isDate;
+    if (!this._isDate) {
+      this._element.querySelector(`.card__date`).value = ``;
+    }
     this._partialUpdate();
   }
 
