@@ -1,28 +1,35 @@
 import {getDate} from '../date';
 import AbstractComponent from "./abstract-component";
 
-const getHashtags = (array) => array.map((tag) => `
-    <span class="card__hashtag-inner">
-      <input
-        type="hidden"
-        name="hashtag"
-        value="repeat"
-        class="card__hashtag-hidden-input"
-      />
-      <p class="card__hashtag-name">
-        ${tag}
-      </p>
-      <button type="button" class="card__hashtag-delete">
-        delete
-      </button>
-    </span>`).join(``);
-
-const getColor = (colors, cardColor) => colors.map((color) => `
+const getHashtags = function (array) {
+  if (!array.length) {
+    return ``;
+  }
+  return array.map((tag) => `<span class="card__hashtag-inner">
     <input
+      type="hidden"
+      name="hashtag"
+      value="${tag}"
+      class="card__hashtag-hidden-input"
+    />
+    <p class="card__hashtag-name">
+      ${tag}
+    </p>
+    <button type="button" class="card__hashtag-delete">
+      delete
+    </button>
+  </span>`).join(``);
+};
+
+const getColor = function (colors, cardColor) {
+  if (!colors.length) {
+    return ``;
+  }
+  return colors.map((color) => `<input
       type="radio"
       id="color-${color}-4"
       class="card__color-input card__color-input--${color} visually-hidden"
-      name="${color}"
+      name="color"
       value="${color}"
       ${color === cardColor ? `checked` : ``}
     />
@@ -31,6 +38,7 @@ const getColor = (colors, cardColor) => colors.map((color) => `
       class="card__color card__color--${color}"
       >${color}</label
     >`).join(``);
+};
 
 const generateRepeatingDays = function (days) {
   const arr = [];
@@ -50,27 +58,37 @@ const generateRepeatingDays = function (days) {
   return arr.join(``);
 };
 
-const isRepeating = (repeatingDays) => Object.keys(repeatingDays).some((day) => repeatingDays[day]);
 
 export default class CardEdit extends AbstractComponent {
-  constructor(data) {
+  constructor(data, container) {
     super();
-    this._self = data;
+    this._container = container;
     this._color = data.color;
     this._colors = data.colors;
     this._repeatingDays = data.repeatingDays;
     this._isArchive = data.isArchive;
     this._isFavorite = data.isFavorite;
     this._description = data.description;
+    this._date = getDate(data);
+    this._isDate = data.isDate;
     this._tags = data.tags;
     this._isFavorite = data.isFavorite;
     this._element = null;
     this._onEscKeyUp = this._onEscUp.bind(this);
     this._onSubmitClick = this._onSubmitButtonClick.bind(this);
+
+    this._onChangeDate = this._onChangeDate.bind(this);
+    this._onChangeRepeated = this._onChangeRepeated.bind(this);
+    this._onDelTag = this._onDelTag.bind(this);
+    this._onPickColor = this._onPickColor.bind(this);
+    this._onChangeRepeatedDay = this._onChangeRepeatedDay.bind(this);
+    this._onAddTag = this._onAddTag.bind(this);
+
+    this._state.isRepeated = this._isRepeated();
   }
 
-  _isRepeating() {
-    return Object.values(this._repeatingDays).some((day) => day === true);
+  _isRepeated() {
+    return Object.values(this._repeatingDays).some((it) => it);
   }
 
   _onSubmitButtonClick(evt) {
@@ -96,7 +114,7 @@ export default class CardEdit extends AbstractComponent {
   }
 
   getTemplate() {
-    return `<article class="card card--edit card--${this._color} ${this._isRepeating() ? `card--repeat` : ``}">
+    return `<article class="card card--edit card--${this._color} ${this._state.isRepeated ? `card--repeat` : ``}">
     <form class="card__form" method="get">
       <div class="card__inner">
         <div class="card__control">
@@ -131,26 +149,24 @@ export default class CardEdit extends AbstractComponent {
           <div class="card__details">
             <div class="card__dates">
               <button class="card__date-deadline-toggle" type="button">
-                date: <span class="card__date-status">yes</span>
+                date: <span class="card__date-status">${this._isDate ? `yes` : `no`}</span>
               </button>
-
-              <fieldset class="card__date-deadline">
-                <label class="card__input-deadline-wrap">
-                  <input
-                    class="card__date"
-                    type="text"
-                    placeholder=""
-                    name="date"
-                    value="${getDate(this._self).date} ${getDate(this._self).time}"
-                  />
-                </label>
-              </fieldset>
-
+              ${this._isDate ? `<fieldset class="card__date-deadline">
+                  <label class="card__input-deadline-wrap">
+                    <input
+                      class="card__date"
+                      type="text"
+                      placeholder=""
+                      name="date"
+                      value="${this._date ? `${this._date.date} ${this._date.time}` : ``}"
+                    />
+                  </label>
+                </fieldset>` : ``}              
               <button class="card__repeat-toggle" type="button">
-                repeat:<span class="card__repeat-status">${isRepeating(this._repeatingDays) ? `yes` : `no`}</span>
+                repeat:<span class="card__repeat-status">${this._state.isRepeated ? `yes` : `no`}</span>
               </button>
 
-              <fieldset class="card__repeat-days">
+              <fieldset class="card__repeat-days" ${this._state.isRepeated ? `` : `disabled`}>
                 <div class="card__repeat-days-inner">
                   ${generateRepeatingDays(this._repeatingDays)}
                 </div>
@@ -215,12 +231,82 @@ export default class CardEdit extends AbstractComponent {
   bind() {
     this._element.querySelector(`.card__form`)
       .addEventListener(`submit`, this._onSubmitClick);
+
+
+    this._element.querySelector(`.card__hashtag-list`).addEventListener(`click`, this._onDelTag);
+    this._element.querySelector(`.card__colors-wrap`).addEventListener(`click`, this._onPickColor);
+    this._element.querySelector(`.card__date-deadline-toggle`).addEventListener(`click`, this._onChangeDate);
+    this._element.querySelector(`.card__repeat-toggle`).addEventListener(`click`, this._onChangeRepeated);
+    this._element.querySelector(`.card__hashtag-input`).addEventListener(`keydown`, this._onAddTag);
     document.addEventListener(`keyup`, this._onEscKeyUp);
   }
 
   unbind() {
     this._element.querySelector(`.card__form`)
       .removeEventListener(`submit`, this._onSubmitClick);
+
+    this._element.querySelector(`.card__hashtag-list`).removeEventListener(`click`, this._onDelTag);
+    this._element.querySelector(`.card__colors-wrap`).removeEventListener(`click`, this._onPickColor);
+    this._element.querySelector(`.card__date-deadline-toggle`).removeEventListener(`click`, this._onChangeDate);
+    this._element.querySelector(`.card__repeat-toggle`).removeEventListener(`click`, this._onChangeRepeated);
+    this._element.querySelector(`.card__hashtag-input`).removeEventListener(`keydown`, this._onAddTag);
     document.removeEventListener(`keyup`, this._onEscKeyUp);
+  }
+
+  _onChangeDate() {
+    this._isDate = !this._isDate;
+    if (!this._isDate) {
+      this._element.querySelector(`.card__date`).value = ``;
+    }
+    this._partialUpdate();
+  }
+
+  _onPickColor(el) {
+    if (el.target.tagName === `LABEL`) {
+      this._color = el.target.textContent;
+      this._partialUpdate();
+    }
+  }
+  _onChangeRepeatedDay(el) {
+    if (el.path[1].classList.contains(`card__repeat-days-inner`)) {
+      this._repeatingDays[el.target.textContent] = !this._repeatingDays[el.target.textContent];
+      this._state.isRepeated = this._isRepeated();
+      if (!this._isRepeated) {
+        this._partialUpdate();
+      }
+    }
+  }
+
+  _onAddTag(evt) {
+    if (evt.code === `Enter`) {
+      if (evt.target.value.trim() === ``) {
+        return;
+      }
+      this._tags.push(evt.target.value);
+      this._partialUpdate();
+    }
+  }
+
+  _onChangeRepeated() {
+    this._state.isRepeated = !this._state.isRepeated;
+    this._partialUpdate();
+  }
+
+  _onDelTag(el) {
+    if (el.target.classList.contains(`card__hashtag-delete`)) {
+      const tag = el.target.parentElement.querySelector(`.card__hashtag-name`).textContent.trim();
+      this._tags.splice(this._tags.indexOf(tag), 1);
+      this._partialUpdate();
+    }
+  }
+
+  _partialUpdate() {
+    this.unbind();
+    const prevElement = this._element;
+    this._element = null;
+    this._element = this.getElement();
+    this._container.getElement().replaceChild(this._element, prevElement);
+    prevElement.remove();
+    this.bind();
   }
 }

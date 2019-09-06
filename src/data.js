@@ -11,21 +11,25 @@ const getHashtags = (hashtags) => {
   return [...hashtags].slice().sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * num));
 };
 
-export const getTask = () => ({
-  description: DESCRIPTION[Math.floor(Math.random() * 3)],
-  dueDate: new Date(getRandomInt(Date.now() - MS_IN_WEEK, Date.now() + MS_IN_WEEK)),
-  repeatingDays: {
-    'mo': getRandomBoolean(),
-    'tu': getRandomBoolean(),
-    'we': getRandomBoolean(),
-    'th': getRandomBoolean(),
-    'fr': getRandomBoolean(),
-    'sa': getRandomBoolean(),
-    'su': getRandomBoolean(),
-  },
-  tags: getHashtags(new Set(TAGS)),
-  color: COLORS[Math.floor(Math.random() * 5)],
-  colors: COLORS,
-  isFavorite: getRandomBoolean(),
-  isArchive: getRandomBoolean(),
-});
+export const getTask = () => {
+  const isDate = getRandomBoolean();
+  return {
+    isDate,
+    description: DESCRIPTION[Math.floor(Math.random() * 3)],
+    dueDate: isDate ? new Date(getRandomInt(Date.now() - MS_IN_WEEK, Date.now() + MS_IN_WEEK)) : ``,
+    repeatingDays: {
+      'mo': getRandomBoolean(),
+      'tu': getRandomBoolean(),
+      'we': getRandomBoolean(),
+      'th': getRandomBoolean(),
+      'fr': getRandomBoolean(),
+      'sa': getRandomBoolean(),
+      'su': getRandomBoolean(),
+    },
+    tags: getHashtags(new Set(TAGS)),
+    color: COLORS[Math.floor(Math.random() * 5)],
+    colors: COLORS,
+    isFavorite: getRandomBoolean(),
+    isArchive: getRandomBoolean(),
+  };
+};
