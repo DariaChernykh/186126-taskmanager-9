@@ -1,5 +1,5 @@
-import {getDate} from "../date";
 import AbstractComponent from "./abstract-component";
+import moment from "moment";
 
 const getHashtags = function (array) {
   if (!array.length) {
@@ -20,7 +20,8 @@ export default class Card extends AbstractComponent {
     this._isArchive = data.isArchive;
     this._isFavorite = data.isFavorite;
     this._description = data.description;
-    this._date = getDate(data);
+    this._date = moment(data.dueDate).format(`DD MMMM`);
+    this._time = moment(data.dueDate).format(`HH:mm`);
     this._isDate = data.isDate;
     this._tags = data.tags;
     this._isFavorite = data.isFavorite;
@@ -73,8 +74,8 @@ export default class Card extends AbstractComponent {
             ${this._isDate ? `<div class="card__dates">
               <div class="card__date-deadline">
                 <p class="card__input-deadline-wrap">
-                  <span class="card__date">${this._date.date}</span>
-                  <span class="card__time">${this._date.time}</span>
+                  <span class="card__date">${this._date}</span>
+                  <span class="card__time">${this._time}</span>
                 </p>
               </div>
             </div>` : ``}

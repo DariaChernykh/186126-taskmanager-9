@@ -1,5 +1,8 @@
 import {getDate} from '../date';
 import AbstractComponent from "./abstract-component";
+import flatpickr from "flatpickr";
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/light.css';
 
 const getHashtags = function (array) {
   if (!array.length) {
@@ -69,6 +72,7 @@ export default class CardEdit extends AbstractComponent {
     this._isArchive = data.isArchive;
     this._isFavorite = data.isFavorite;
     this._description = data.description;
+    this._dueDate = data.dueDate;
     this._date = getDate(data);
     this._isDate = data.isDate;
     this._tags = data.tags;
@@ -239,6 +243,16 @@ export default class CardEdit extends AbstractComponent {
     this._element.querySelector(`.card__repeat-toggle`).addEventListener(`click`, this._onChangeRepeated);
     this._element.querySelector(`.card__hashtag-input`).addEventListener(`keydown`, this._onAddTag);
     document.addEventListener(`keyup`, this._onEscKeyUp);
+
+    if (this._element.querySelector(`.card__date`)) {
+      flatpickr(this._element.querySelector(`.card__date`), {
+        altInput: true,
+        allowInput: true,
+        enableTime: true,
+        altFormat: `d F H:i`,
+        defaultDate: this._dueDate ? this._dueDate : false,
+      });
+    }
   }
 
   unbind() {
@@ -251,6 +265,7 @@ export default class CardEdit extends AbstractComponent {
     this._element.querySelector(`.card__repeat-toggle`).removeEventListener(`click`, this._onChangeRepeated);
     this._element.querySelector(`.card__hashtag-input`).removeEventListener(`keydown`, this._onAddTag);
     document.removeEventListener(`keyup`, this._onEscKeyUp);
+
   }
 
   _onChangeDate() {
